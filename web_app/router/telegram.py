@@ -24,14 +24,14 @@ async def start_app():
 
 
 @tg.post("/login", tags=["auth"])
-async def login(request: Request, phone: Phone, background_tasks: BackgroundTasks):
+async def login(request: Request, phone: str, background_tasks: BackgroundTasks):
     await tg_cli.qr_code_func()
     background_tasks.add_task(tg_cli.wait)
     return {"url": request.url_for("image")}
 
 
 @tg.get("/check/login", tags=["auth"])
-async def check_login(phone: Phone):
+async def check_login(phone: str):
     try:
         is_auth: bool = await tg_cli.check_login()
         return JSONResponse(status_code=200, content={"status": is_auth})
@@ -41,7 +41,7 @@ async def check_login(phone: Phone):
 
 
 @tg.get("/messages", tags=["message"])
-async def get_messages(phone: Phone, uname: str):
+async def get_messages(phone: str, uname: str):
     try:
         messages = await tg_cli.get_messages(uname=uname)
         mongo_db.add_messages(messages)
